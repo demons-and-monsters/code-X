@@ -1,4 +1,5 @@
 #include "route.h"
+<<<<<<< HEAD
 #include "lib_record.h"
 
 #include <iostream>
@@ -382,11 +383,15 @@ void naive_search(Node* node, int distance, std::vector<Edge*>& path) {
         new_line_flag = true;
     }
 }
+=======
+>>>>>>> c33fffe9a8cad3ae6b81081be7075b99b85e6842
 
+#include "force_search_solvor.h"
 //你要完成的功能总入口
 ACO aco;
 void search_route(char *topo[5000], int edge_num, char *demand)
 {   
+<<<<<<< HEAD
 	if (!read_topo(topo, edge_num, node_set, edge_set) ||
         !read_demand(demand, v_node_set))
     {
@@ -480,3 +485,8 @@ bool read_demand(char* demand,
 }
 
 
+=======
+    ForceSearchSolvor fs_solvor;
+    fs_solvor.solve(topo, edge_num, demand);
+}
+>>>>>>> c33fffe9a8cad3ae6b81081be7075b99b85e6842
