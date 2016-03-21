@@ -1,7 +1,6 @@
 #include "route.h"
-<<<<<<< HEAD
+#include "force_search_solvor.h"
 #include "lib_record.h"
-
 #include <iostream>
 #include <sstream>
 #include <cstdio>
@@ -10,22 +9,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unordered_map>
 
-//#define SHOW_DEBUG_INFO
-
-std::unordered_map<int, Node*> node_set;
-std::unordered_map<int, Edge*> edge_set;
-std::unordered_map<int, Node*> v_node_set;
-int S;
-int T;
-int answer = 999999;
-std::vector<Edge*> answer_path;
-
-bool new_line_flag = true;
-
-struct ACO
+namespace ACO
 {
-	ACO()
+	bool isv_node[650];
+	std::vector<int> v_node;
+	double alpha,beta,rou,QIN,QAS,QAR,QAC,ANTNUM,tms;
+	int S,T;
+	int head[650],tail[650];
+
+	void init()
 	{
 		memset(head,-1,sizeof(head));
 		memset(tail,-1,sizeof(tail));
@@ -41,7 +35,7 @@ struct ACO
 		ANTNUM=100;
 		tms=1000000;
 	}
-	double alpha,beta,rou,QIN,QAS,QAR,QAC,ANTNUM,tms;
+
 	struct ACO_Anspath
 	{
 		ACO_Anspath()
@@ -53,10 +47,8 @@ struct ACO
 		int length;
 	};
 	ACO_Anspath ACO_anspath;
-	int S,T;
-	int head[650],tail[650];
-	bool isv_node[650];
-	std::vector<int> v_node;
+
+
 	struct ACO_Edge
 	{
 		int num;
@@ -72,6 +64,7 @@ struct ACO
 			this->weight=weight;
 		}
 	}ACO_edge[5000];
+
 	struct ACO_Node
 	{
 		int Node_id;
@@ -79,6 +72,7 @@ struct ACO
 		int v_node_num;
 		int length;
 	}ACO_node[650];
+
 	void addedge(int Edge_id,int source_id,int des_id,int weight)
 	{
 		ACO_edge[Edge_id].init(Edge_id,source_id,des_id,weight);
@@ -92,6 +86,7 @@ struct ACO
 		isv_node[v_node_id]=true;
 		v_node.push_back(v_node_id);
 	}
+
 	std::queue<int> SPFA_q;
 	int SPFA_des[650];
 	bool SPFA_visited[650];
@@ -185,7 +180,7 @@ struct ACO
 			kind=_kind;
 			id=_id;
 			length=0;
-			if(kind==1) start=S,end=T;
+			if(kind==1) start=ACO::S,end=T;
 			else start=T,end=S;
 			memset(visited,false,sizeof(visited));
 			v_node_num=0;
@@ -216,7 +211,7 @@ struct ACO
 				Ant_path.push_back(i);
 				now=ACO_edge[i].to;
 				length+=ACO_edge[i].weight;
-				if(v_node_num+ACO_node[now]==(int)v_node.size()) Check();
+				if(v_node_num+ACO_node[now].length==(int)v_node.size()) Check();
 				if(isv_node[now]) v_node_num++;
 				visited[now]=true;
 				if(now==T) Rebirth();
@@ -269,7 +264,7 @@ struct ACO
 		void Rebirth()
 		{
 			Update();
-			Init();
+			Init(this->id, this->kind);
 		}
 		void Update()
 		{
@@ -330,163 +325,10 @@ struct ACO
 	}
 };
 
-void naive_search(Node* node, int distance, std::vector<Edge*>& path) {
-    
-    #ifdef SHOW_DEBUG_INFO
-    {    
-        if (!new_line_flag) {
-            std::cout << "--";
-        }
 
-        if (new_line_flag)
-        {
-            std::cout << std::endl;
-            for (int j = 0; j < path.size(); j++) 
-                std::cout << "├--";
-            new_line_flag = false;
-        }
-        std::cout << node->id;
-    }
-    #endif
-
-    if (node->id == T) {
-        for (std::unordered_map<int, Node*>::iterator it = v_node_set.begin();
-                it != v_node_set.end(); it++) {
-            if (!it->second->visited)
-                return;
-        }
-        if (distance < answer) { 
-            #ifdef SHOW_DEBUG_INFO
-            {   
-                std::cout << " // new answer : " << distance << "[";
-                for (int i = 0; i < path.size(); i++) {
-                    std::cout << path[i]->from->id << "-->";
-                }
-                std::cout << T << "]";
-            }
-            #endif
-            answer = distance;
-            answer_path = path;
-        }
-    }
-
-    for (int i = 0; i < node->outters.size(); i++) {
-        Node* to = node->outters[i]->to;
-        if (to->visited) {
-            continue;
-        }
-        to->visited = true;
-        path.push_back(node->outters[i]);
-        naive_search(to, distance + node->outters[i]->weight, path);
-        to->visited = false;
-        path.pop_back();
-        new_line_flag = true;
-    }
-}
-=======
->>>>>>> c33fffe9a8cad3ae6b81081be7075b99b85e6842
-
-#include "force_search_solvor.h"
 //你要完成的功能总入口
-ACO aco;
 void search_route(char *topo[5000], int edge_num, char *demand)
 {   
-<<<<<<< HEAD
-	if (!read_topo(topo, edge_num, node_set, edge_set) ||
-        !read_demand(demand, v_node_set))
-    {
-        return;
-    }
-
-    std::vector<Edge*> path;
-	aco.solve();
-    //naive_search(node_set[S], 0, path);
-    
-    #ifdef SHOW_DEBUG_INFO
-    {
-        std::cout << std::endl;
-        std::cout << "answer : " << answer << std::endl;
-        for (size_t i = 0; i + 1 < answer_path.size(); i++)
-        {
-            std::cout << answer_path[i]->from->id << "->";
-        }
-        std::cout << answer_path[answer_path.size() - 1]->from->id
-                << "->"
-                << answer_path[answer_path.size() - 1]->to->id << std::endl;
-    }
-    #endif
-
-    //for (size_t i = 0; i < answer_path.size(); i++)
-   // {
-    //    record_result(answer_path[i]->id);
-    //}
+	ACO::init();
 }
 
-bool read_topo(char* topo[5000], 
-        int edge_num,
-        std::unordered_map<int, Node*>& node_set,
-        std::unordered_map<int, Edge*>& edge_set)
-{
-    int edge_id;
-    int source_id;
-    int des_id;
-    int weight;
-
-    for (int line_index = 0; line_index < edge_num; line_index++)
-    {
-        sscanf(topo[line_index], "%d,%d,%d,%d", &edge_id, &source_id, &des_id, &weight);
-        aco.addedge(edge_id, source_id, des_id, weight);
-		if (node_set.find(source_id) == node_set.end())
-        {
-            node_set[source_id] = new Node(source_id);
-        }
-
-        if (node_set.find(des_id) == node_set.end()) 
-        {
-            node_set[des_id] = new Node(des_id);
-        }
-
-        if (edge_set.find(edge_id) != edge_set.end()) 
-        {
-            std::cout << "dumplicted edge id" << std::endl;
-            return false;
-        } 
-        else 
-        {
-            edge_set[edge_id] = 
-                new Edge(edge_id, node_set[source_id], node_set[des_id], weight);
-        }
-        node_set[source_id]->outters.push_back(edge_set[edge_id]);
-        node_set[des_id]->inners.push_back(edge_set[edge_id]);
-    }
-    return true;
-}
-
-bool read_demand(char* demand, 
-        std::unordered_map<int, Node*>& v_node_set)
-{
-    char v_str[4000];
-    sscanf(demand, "%d,%d,%s", &S, &T, v_str);
-    aco.S=S;aco.T=T;
-	int v_node_id;
-    std::string id_str;
-
-    std::stringstream ss(v_str);
-    while (getline(ss, id_str, '|')) {
-        v_node_id = atoi(id_str.c_str());
-        aco.addvnode(v_node_id);
-		if (node_set.find(v_node_id) == node_set.end()) {
-            std::cout << "v-node not in node_set" << std::endl;
-            return false;
-        }
-        v_node_set[v_node_id] = node_set[v_node_id];
-    }
-    return true;
-}
-
-
-=======
-    ForceSearchSolvor fs_solvor;
-    fs_solvor.solve(topo, edge_num, demand);
-}
->>>>>>> c33fffe9a8cad3ae6b81081be7075b99b85e6842
