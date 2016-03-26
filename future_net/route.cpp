@@ -10,7 +10,9 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unordered_map>
-
+#include <math.h>
+//#define SHOW_DEBUG_INFO
+//#define SHOW_POINT
 namespace ACO
 {
 	bool isv_node[650];
@@ -23,7 +25,7 @@ namespace ACO
 	{
 		memset(head,-1,sizeof(head));
 		memset(tail,-1,sizeof(tail));
-		memset(isv_node,false,sizeof(isv_node));
+		memset(isv_node,0,sizeof(isv_node));
 		v_node.clear();
 		alpha=0.5;
 		beta=0.7;
@@ -32,8 +34,8 @@ namespace ACO
 		QAS=0.001;
 		QAR=0.1;
 		QAC=100;
-		ANTNUM=100;
-		tms=1000000;
+		ANTNUM=400;
+		tms=10000;
 	}
 
 	struct ACO_Anspath
@@ -96,7 +98,7 @@ namespace ACO
 		while(!SPFA_q.empty()) SPFA_q.pop();
 		memset(SPFA_des,0x3f,sizeof(SPFA_des));
 		memset(SPFA_path,-1,sizeof(SPFA_path));
-		memset(SPFA_visited,false,sizeof(SPFA_visited));
+		memset(SPFA_visited,0,sizeof(SPFA_visited));
 		SPFA_q.push(t);
 		SPFA_des[t]=0;
 		SPFA_visited[t]=true;
@@ -132,13 +134,24 @@ namespace ACO
 				ACO_node[i].v_node_num=0;
 				ACO_node[i].path.clear();
 				ACO_node[i].length=0;
-				while(tmp!=-1)
+				while(true)
 				{
 					ACO_node[i].path.push_back(tmp);
+#ifdef SHOW_DEBUG_INFO
+					{
+						printf("%d--->",tmp);
+					}
+#endif
 					if(isv_node[tmp]) ACO_node[i].v_node_num++;
 					if(tmp!=T) ACO_node[i].length+=ACO_edge[SPFA_path[tmp]].weight;
+					else break;
 					tmp=ACO_edge[SPFA_path[tmp]].to;
 				}
+#ifdef SHOW_DEBUG_INFO
+				{
+					printf("\n");
+				}
+#endif
 			}
 		return true;
 	}
@@ -180,7 +193,7 @@ namespace ACO
 			kind=_kind;
 			id=_id;
 			length=0;
-			if(kind==1) start=ACO::S,end=T;
+			if(kind==1) start=S,end=T;
 			else start=T,end=S;
 			memset(visited,false,sizeof(visited));
 			v_node_num=0;
@@ -190,12 +203,11 @@ namespace ACO
 		}
 		void NextNode()
 		{
-			srand((int)time(0));
 			if(kind==1)
 			{
 				double sum=0;
 				for(int i=head[now];i!=-1;i=ACO_edge[i].h_next)
-					if(!visited[ACO_edge[i].to]&&SPFA_path[ACO_edge[i].to]!=-1)
+					if(!visited[ACO_edge[i].to]&&(SPFA_path[ACO_edge[i].to]!=-1||ACO_edge[i].to==T))
 					{
 						sum+=pow(ACO_edge[i].inform,alpha)*pow(1.0/ACO_edge[i].weight,beta);
 					}
@@ -203,7 +215,7 @@ namespace ACO
 				double tmp=(double)rand()/RAND_MAX*sum*0.99;
 				int i;
 				for(i=head[now];i!=-1;i=ACO_edge[i].h_next)
-					if(!visited[ACO_edge[i].to]&&(SPFA_path[ACO_edge[i].to]!=-1))
+					if(!visited[ACO_edge[i].to]&&((SPFA_path[ACO_edge[i].to]!=-1)||ACO_edge[i].to==T))
 					{
 						tmp-=pow(ACO_edge[i].inform,alpha)*pow(1.0/ACO_edge[i].weight,beta);
 						if(tmp<0) break;
@@ -211,7 +223,7 @@ namespace ACO
 				Ant_path.push_back(i);
 				now=ACO_edge[i].to;
 				length+=ACO_edge[i].weight;
-				if(v_node_num+ACO_node[now].length==(int)v_node.size()) Check();
+				if(v_node_num+ACO_node[now].v_node_num==(int)v_node.size()) Check();
 				if(isv_node[now]) v_node_num++;
 				visited[now]=true;
 				if(now==T) Rebirth();
@@ -263,6 +275,19 @@ namespace ACO
 		}
 		void Rebirth()
 		{
+#ifdef SHOW_DEBUG_INFO
+			printf("Ant NO.%d kind %d  :",id,kind);
+			if(kind==1)
+			{
+				for(int i=0;i<(int)Ant_path.size();i++) printf("%d--->",ACO_edge[Ant_path[i]].from);
+				printf("%d\n",now);
+			}
+			else
+			{
+				for(int i=0;i<(int)Ant_path.size();i++) printf("%d<---",ACO_edge[Ant_path[i]].to);
+				printf("%d\n",now);
+			}
+#endif
 			Update();
 			Init(this->id, this->kind);
 		}
@@ -270,7 +295,7 @@ namespace ACO
 		{
 			if(kind==1)
 			{
-				if(now==T)
+				if(now==T&&v_node_num==(int)v_node.size())
 				{
 					for(int i=0;i<(int)Ant_path.size();i++)
 						ACO_edge[Ant_path[i]].inform+=QAC/length;
@@ -292,7 +317,7 @@ namespace ACO
 			}
 			else
 			{
-				if(now==S)
+				if(now==S&&v_node_num==(int)v_node.size())
 				{
 					for(int i=0;i<(int)Ant_path.size();i++)
 						ACO_edge[Ant_path[i]].inform+=QAC/length;
@@ -305,30 +330,101 @@ namespace ACO
 			}
 		}
 	};
-	Ant ant[520],rant[520];
-	void solve()
+	void readtopo(char *topo[5000],int edge_num)
 	{
+		int edge_id;
+		int source_id;
+		int des_id;
+		int weight;
+		for(int i=0;i<edge_num;i++)
+		{
+			sscanf(topo[i],"%d,%d,%d,%d",&edge_id,&source_id,&des_id,&weight);
+			addedge(edge_id,source_id,des_id,weight);
+		}
+	}
+	void readdemand(char *demand)
+	{
+		char v_str[4000];
+		sscanf(demand,"%d,%d,%s",&S,&T,v_str);
+		int len=strlen(v_str);
+		int now=0;
+		for(int i=0;i<len;i++)
+		{
+			if(v_str[i]=='|') 
+			{
+				addvnode(now);
+				now=0;
+			}
+			else now=now*10+v_str[i]-'0';
+		}
+		addvnode(now);
+	}
+	Ant ant[520],rant[520];
+	void solve(char *topo[5000],int edge_num,char *demand)
+	{
+		init();
+		readtopo(topo,edge_num);
+		readdemand(demand);
+#ifdef SHOW_DEBUG_INFO
+		{
+			for(int i=0;i==ACO_edge[i].num;i++)
+				printf("....%d  %d  %d\n",ACO_edge[i].from,ACO_edge[i].to,ACO_edge[i].weight);
+		}
+#endif
 		bool isna=SPFA(T);
+#ifdef SHOW_DEBUG_INFO
+		{
+			printf("............SPFA/ok\n");
+		}
+#endif
 		if(!isna) return;
 		Edge_InformInit();
 		for(int i=0;i<ANTNUM;i++) ant[i].Init(i,1);
 		for(int i=0;i<ANTNUM;i++) rant[i].Init(i,2);
+#ifdef SHOW_DEBUG_INFO
+		{
+			printf(".............AntInit/ok\n");
+		}
+#endif
+		srand((int)time(NULL));
 		for(int i=1;i<=tms;i++)
 		{
-			for(int i=0;i<ANTNUM;i++) ant[i].NextNode();
-			for(int i=0;i<ANTNUM;i++) rant[i].NextNode();
+			for(int j=0;j<ANTNUM;j++) ant[j].NextNode();
+			for(int j=0;j<ANTNUM;j++) rant[j].NextNode();
 			Edge_decrease();
+#ifdef SHOW_DUBUG_INFO
+			{
+				printf(".............STEP %3d:answer=%4d\n",i,ACO_anspath.length);
+			}
+#endif
 		}
 		if(ACO_anspath.length==0) return;
-		for(int i=0;i<(int)ACO_anspath.path.size();i++)
-			record_result(ACO_anspath.path[i]);
+		for(int i=0;i<(int)ACO_anspath.path.size()-1;i++)
+			record_result(f[ACO_anspath.path[i]][ACO_anspath.path[i+1]]);
+#ifdef SHOW_POINT
+			{
+				for(int i=0;i<(int)ACO_anspath.path.size();i++)
+					printf("%d-->",ACO_anspath.path[i]);
+				printf("%d\n",ACO_anspath.length);
+			}
+#endif
+#ifdef SHOW_DEBUG_INFO
+			{
+				printf("answer is:%d\n",ACO_anspath.length);
+			}
+#endif
 	}
 };
 
 
 //你要完成的功能总入口
 void search_route(char *topo[5000], int edge_num, char *demand)
-{   
-	ACO::init();
+{  
+#ifdef SHOW_DEBUG_INFO
+	{
+		printf("............ACO starts");
+	}
+#endif
+	ACO::solve(topo,edge_num,demand);
 }
 

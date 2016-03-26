@@ -36,10 +36,10 @@ CMAKE_COMMAND = /usr/local/bin/cmake
 RM = /usr/local/bin/cmake -E remove -f
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wanxiaowei/code-X/future_net
+CMAKE_SOURCE_DIR = /home/wanxiaowei/v2-code-X/code-X/future_net
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wanxiaowei/code-X/build
+CMAKE_BINARY_DIR = /home/wanxiaowei/v2-code-X/code-X/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -66,9 +66,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/wanxiaowei/code-X/build/CMakeFiles /home/wanxiaowei/code-X/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/wanxiaowei/v2-code-X/code-X/build/CMakeFiles /home/wanxiaowei/v2-code-X/code-X/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/wanxiaowei/code-X/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/wanxiaowei/v2-code-X/code-X/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -107,6 +107,30 @@ future_net: cmake_check_build_system
 future_net/fast:
 	$(MAKE) -f CMakeFiles/future_net.dir/build.make CMakeFiles/future_net.dir/build
 .PHONY : future_net/fast
+
+force_search_solver.o: force_search_solver.cpp.o
+.PHONY : force_search_solver.o
+
+# target to build an object file
+force_search_solver.cpp.o:
+	$(MAKE) -f CMakeFiles/future_net.dir/build.make CMakeFiles/future_net.dir/force_search_solver.cpp.o
+.PHONY : force_search_solver.cpp.o
+
+force_search_solver.i: force_search_solver.cpp.i
+.PHONY : force_search_solver.i
+
+# target to preprocess a source file
+force_search_solver.cpp.i:
+	$(MAKE) -f CMakeFiles/future_net.dir/build.make CMakeFiles/future_net.dir/force_search_solver.cpp.i
+.PHONY : force_search_solver.cpp.i
+
+force_search_solver.s: force_search_solver.cpp.s
+.PHONY : force_search_solver.s
+
+# target to generate assembly for a file
+force_search_solver.cpp.s:
+	$(MAKE) -f CMakeFiles/future_net.dir/build.make CMakeFiles/future_net.dir/force_search_solver.cpp.s
+.PHONY : force_search_solver.cpp.s
 
 future_net.o: future_net.cpp.o
 .PHONY : future_net.o
@@ -189,6 +213,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... future_net"
 	@echo "... rebuild_cache"
+	@echo "... force_search_solver.o"
+	@echo "... force_search_solver.i"
+	@echo "... force_search_solver.s"
 	@echo "... future_net.o"
 	@echo "... future_net.i"
 	@echo "... future_net.s"

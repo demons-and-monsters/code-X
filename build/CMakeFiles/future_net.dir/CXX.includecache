@@ -6,17 +6,33 @@
 
 #IncludeRegexTransform: 
 
-/home/wanxiaowei/code-X/future_net/future_net.cpp
-route.h
-/home/wanxiaowei/code-X/future_net/route.h
-lib_io.h
-/home/wanxiaowei/code-X/future_net/lib_io.h
-lib_time.h
-/home/wanxiaowei/code-X/future_net/lib_time.h
-stdio.h
-/home/wanxiaowei/code-X/future_net/stdio.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/force_search_solver.cpp
+force_search_solvor.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/force_search_solvor.h
+lib_record.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/lib_record.h
+iostream
+-
+sstream
+-
 
-/home/wanxiaowei/code-X/future_net/io.cpp
+/home/wanxiaowei/v2-code-X/code-X/future_net/force_search_solvor.h
+vector
+-
+unordered_map
+-
+
+/home/wanxiaowei/v2-code-X/code-X/future_net/future_net.cpp
+route.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/route.h
+lib_io.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/lib_io.h
+lib_time.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/lib_time.h
+stdio.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/stdio.h
+
+/home/wanxiaowei/v2-code-X/code-X/future_net/io.cpp
 stdio.h
 -
 stdlib.h
@@ -36,17 +52,19 @@ unistd.h
 signal.h
 -
 
-/home/wanxiaowei/code-X/future_net/lib/lib_io.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/lib/lib_io.h
 
-/home/wanxiaowei/code-X/future_net/lib/lib_record.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/lib/lib_record.h
 
-/home/wanxiaowei/code-X/future_net/lib/lib_time.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/lib/lib_time.h
 
-/home/wanxiaowei/code-X/future_net/route.cpp
+/home/wanxiaowei/v2-code-X/code-X/future_net/route.cpp
 route.h
-/home/wanxiaowei/code-X/future_net/route.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/route.h
+force_search_solvor.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/force_search_solvor.h
 lib_record.h
-/home/wanxiaowei/code-X/future_net/lib_record.h
+/home/wanxiaowei/v2-code-X/code-X/future_net/lib_record.h
 iostream
 -
 sstream
@@ -63,10 +81,10 @@ stdlib.h
 -
 time.h
 -
-
-/home/wanxiaowei/code-X/future_net/route.h
-vector
--
 unordered_map
 -
+math.h
+-
+
+/home/wanxiaowei/v2-code-X/code-X/future_net/route.h
 
